@@ -18,6 +18,10 @@ Learn piano the fun way — a browser-based piano learning game with MIDI keyboa
 
 Open `index.html` in a modern browser. Connect a MIDI keyboard for the best experience.
 
+## Blog Post
+
+[Hold My Beer — I Vibe-Coded a Piano Game for My Daughter](https://victorantos.com/posts/hold-my-beer-i-vibe-coded-a-piano-game-for-my-daughter/)
+
 ## Author
 
 **Victor Antofica** — [victorantos.com](https://victorantos.com)
