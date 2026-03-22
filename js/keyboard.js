@@ -58,6 +58,7 @@ const KeyboardInput = {
     e.preventDefault();
     this.activeKeys.add(midi);
     MidiManager.activeNotes.add(midi);
+    AudioFX.playNote(midi, 100);
     if (MidiManager.onNoteOn) MidiManager.onNoteOn(midi, 100);
   },
 
@@ -71,6 +72,7 @@ const KeyboardInput = {
     e.preventDefault();
     this.activeKeys.delete(midi);
     MidiManager.activeNotes.delete(midi);
+    AudioFX.stopNote(midi);
     if (MidiManager.onNoteOff) MidiManager.onNoteOff(midi);
   },
 
