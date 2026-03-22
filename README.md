@@ -2,6 +2,8 @@
 
 Learn piano the fun way — a browser-based piano learning game with MIDI keyboard support.
 
+**[Play it now](https://victorantos.github.io/PianoFun/)**
+
 ![Home Screen](screenshots/home.png)
 
 ![Gameplay](screenshots/gameplay.png)
