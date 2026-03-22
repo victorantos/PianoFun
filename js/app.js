@@ -6,9 +6,13 @@ const App = {
   async init() {
     // Init audio context on first user interaction
     document.addEventListener('click', () => AudioFX._ensureCtx(), { once: true });
+    document.addEventListener('keydown', () => AudioFX._ensureCtx(), { once: true });
 
     // Init MIDI
     await MidiManager.init();
+
+    // Init computer keyboard fallback
+    KeyboardInput.init();
 
     // Build song list
     this.buildSongList();

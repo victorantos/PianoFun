@@ -40,7 +40,7 @@ const MidiManager = {
       }
     }
     if (!found) {
-      this._updateStatus(false, 'No piano detected — plug in USB');
+      this._updateStatus(false, 'No piano detected — use keyboard or plug in USB');
     }
   },
 
