@@ -2,6 +2,10 @@
 
 Learn piano the fun way — a browser-based piano learning game with MIDI keyboard support.
 
+![Home Screen](screenshots/home.png)
+
+![Gameplay](screenshots/gameplay.png)
+
 ## Features
 
 - MIDI keyboard connectivity
