@@ -202,6 +202,7 @@ const App = {
     });
 
     document.getElementById('egg-btn-home').addEventListener('click', () => {
+      MidiManager.onNoteOn = null;
       this.showScreen('home');
     });
 
@@ -266,6 +267,12 @@ const App = {
 
   _showEggResults(stats) {
     this.showScreen('egg-results');
+
+    // Any piano key press = Play Again
+    MidiManager.onNoteOn = () => {
+      MidiManager.onNoteOn = null;
+      this._eggRetry();
+    };
 
     const titleEl = document.getElementById('egg-result-title');
     const eggsEl = document.getElementById('egg-result-eggs');
