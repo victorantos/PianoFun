@@ -62,11 +62,15 @@ const EggGame = {
 
     MidiManager.onNoteOn = (midi, vel) => this._onNoteOn(midi, vel);
 
-    // Click to continue from game over
-    this._gameOverContinueHandler = () => {
+    // Click or Enter to continue from game over
+    this._gameOverClickHandler = () => {
       if (this.state === 'gameover') this._showResults();
     };
-    document.getElementById('egg-game-canvas').addEventListener('click', this._gameOverContinueHandler);
+    this._gameOverKeyHandler = (e) => {
+      if (e.key === 'Enter' && this.state === 'gameover') this._showResults();
+    };
+    document.getElementById('egg-game-canvas').addEventListener('click', this._gameOverClickHandler);
+    document.addEventListener('keydown', this._gameOverKeyHandler);
 
     this.lastFrameTime = performance.now();
     this._loop(this.lastFrameTime);
@@ -76,8 +80,11 @@ const EggGame = {
     this.state = 'idle';
     MidiManager.onNoteOn = null;
     const canvas = document.getElementById('egg-game-canvas');
-    if (canvas && this._gameOverContinueHandler) {
-      canvas.removeEventListener('click', this._gameOverContinueHandler);
+    if (canvas && this._gameOverClickHandler) {
+      canvas.removeEventListener('click', this._gameOverClickHandler);
+    }
+    if (this._gameOverKeyHandler) {
+      document.removeEventListener('keydown', this._gameOverKeyHandler);
     }
   },
 
@@ -587,6 +594,10 @@ const EggGame = {
     if (this.state === 'results') return; // prevent double call
     this.state = 'results';
     MidiManager.onNoteOn = null;
+    // Clean up game-over listeners
+    if (this._gameOverKeyHandler) {
+      document.removeEventListener('keydown', this._gameOverKeyHandler);
+    }
     if (this.onComplete) this.onComplete(this._getStats());
   },
 

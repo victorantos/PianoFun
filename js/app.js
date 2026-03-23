@@ -198,14 +198,26 @@ const App = {
 
     // Results buttons
     document.getElementById('egg-btn-retry').addEventListener('click', () => {
-      if (this._lastEggMode) {
-        this._startEggGame(this._lastEggMode, this._lastEggSong);
-      }
+      this._eggRetry();
     });
 
     document.getElementById('egg-btn-home').addEventListener('click', () => {
       this.showScreen('home');
     });
+
+    // Enter key to play again from results screen
+    document.addEventListener('keydown', (e) => {
+      if (e.key === 'Enter' && this.currentScreen === 'egg-results') {
+        e.preventDefault();
+        this._eggRetry();
+      }
+    });
+  },
+
+  _eggRetry() {
+    if (this._lastEggMode) {
+      this._startEggGame(this._lastEggMode, this._lastEggSong);
+    }
   },
 
   _buildEggSongList() {
