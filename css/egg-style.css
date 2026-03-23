@@ -233,6 +233,11 @@
   justify-content: center;
 }
 
+.egg-result-buttons .result-btn:focus {
+  outline: 2px solid #fff;
+  outline-offset: 2px;
+}
+
 /* ===================== HOME SCREEN EGG CARD ===================== */
 .egg-home-card {
   display: flex;

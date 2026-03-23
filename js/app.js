@@ -212,6 +212,14 @@ const App = {
         this._eggRetry();
       }
     });
+
+    // Also handle Enter on the piano results screen
+    document.addEventListener('keydown', (e) => {
+      if (e.key === 'Enter' && this.currentScreen === 'results') {
+        e.preventDefault();
+        document.getElementById('btn-retry').click();
+      }
+    });
   },
 
   _eggRetry() {
@@ -263,6 +271,9 @@ const App = {
     const eggsEl = document.getElementById('egg-result-eggs');
     const msgEl = document.getElementById('egg-result-message');
     const bodyEl = document.getElementById('egg-result-body');
+
+    // Focus Play Again button so Enter works immediately
+    setTimeout(() => document.getElementById('egg-btn-retry').focus(), 100);
 
     if (stats.mode === 'versus') {
       titleEl.textContent = 'Versus Match';
