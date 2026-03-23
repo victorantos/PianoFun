@@ -131,14 +131,60 @@ const EggRenderer = {
     // Ground + grass
     EggSprites.drawGround(ctx, this.width, this.height, this.groundY);
 
-    // Nests
+    // Nests + key labels
     if (state.nestMidis) {
+      const pressed = state.pressedNotes || {};
       state.nestMidis.forEach(midi => {
         const x = getKeyPosition(midi, this.width);
         if (x === null) return;
         const w = getNoteWidth(midi, this.width);
-        EggSprites.drawNest(ctx, x, this.basketY, w, state.lastCaughtMidi === midi);
+        const pressTimer = pressed[midi] || 0;
+        const isCaught = state.lastCaughtMidi === midi;
+        EggSprites.drawNest(ctx, x, this.basketY, w, isCaught, pressTimer);
       });
+
+      // Key labels under each nest
+      ctx.font = '10px "Fredoka", sans-serif';
+      ctx.textAlign = 'center';
+      ctx.textBaseline = 'top';
+      state.nestMidis.forEach(midi => {
+        const x = getKeyPosition(midi, this.width);
+        if (x === null) return;
+        const key = this._midiToKeyLabel(midi);
+        if (!key) return;
+        const pressTimer = pressed[midi] || 0;
+        ctx.fillStyle = pressTimer > 0 ? '#FFD700' : 'rgba(255,255,255,0.35)';
+        ctx.fillText(key, x, this.basketY + 20);
+      });
+
+      // Glow for pressed black keys (no nest drawn for them)
+      for (const midi in pressed) {
+        const m = parseInt(midi);
+        if (!isBlackKey(m)) continue;
+        const x = getKeyPosition(m, this.width);
+        if (x === null) continue;
+        const color = getNoteColor(m);
+        const alpha = Math.min(1, pressed[midi] / 150);
+        ctx.save();
+        ctx.shadowColor = color;
+        ctx.shadowBlur = 20;
+        ctx.fillStyle = color;
+        ctx.globalAlpha = alpha * 0.7;
+        ctx.beginPath();
+        ctx.arc(x, this.basketY, 12, 0, Math.PI * 2);
+        ctx.fill();
+        // Key label
+        ctx.globalAlpha = alpha;
+        ctx.fillStyle = '#fff';
+        ctx.font = '10px "Fredoka", sans-serif';
+        ctx.textAlign = 'center';
+        ctx.textBaseline = 'top';
+        const key = this._midiToKeyLabel(m);
+        if (key) ctx.fillText(key, x, this.basketY + 20);
+        ctx.globalAlpha = 1;
+        ctx.shadowBlur = 0;
+        ctx.restore();
+      }
     }
 
     // Frost overlay
@@ -413,6 +459,20 @@ const EggRenderer = {
         age: 0, lifetime: 2000 + Math.random() * 1000
       });
     }
+  },
+
+  // Reverse map: MIDI number -> keyboard key label
+  _midiKeyMap: null,
+  _midiToKeyLabel(midi) {
+    if (!this._midiKeyMap) {
+      this._midiKeyMap = {};
+      const km = KeyboardInput.keyMap;
+      for (const key in km) {
+        const label = key === ';' ? ';' : key === "'" ? "'" : key === ']' ? ']' : key.toUpperCase();
+        this._midiKeyMap[km[key]] = label;
+      }
+    }
+    return this._midiKeyMap[midi] || null;
   },
 
   cleanup() {

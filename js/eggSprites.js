@@ -53,19 +53,47 @@ const EggSprites = {
     });
   },
 
-  drawNest(ctx, x, y, width, highlighted) {
+  drawNest(ctx, x, y, width, highlighted, pressTimer) {
     const w = Math.max(width * 0.65, 16);
     const h = 18;
+    // pressTimer: 0 = idle, >0 = recently pressed (fades from 300 to 0)
+    const pressAlpha = pressTimer > 0 ? Math.min(1, pressTimer / 150) : 0;
+    const isPressed = pressAlpha > 0;
+
     ctx.save();
     ctx.translate(x, y);
 
-    const grad = ctx.createLinearGradient(-w / 2, -h, w / 2, h);
-    grad.addColorStop(0, '#8B6914');
-    grad.addColorStop(0.5, '#A0792C');
-    grad.addColorStop(1, '#6B5210');
-    ctx.fillStyle = grad;
+    // Bright glow behind nest when pressed
+    if (isPressed) {
+      const glowSize = 1 + pressAlpha * 0.3;
+      ctx.save();
+      ctx.scale(glowSize, glowSize);
+      ctx.shadowColor = '#FFD700';
+      ctx.shadowBlur = 25 * pressAlpha;
+      ctx.fillStyle = `rgba(255, 215, 0, ${pressAlpha * 0.4})`;
+      ctx.beginPath();
+      ctx.ellipse(0, 0, w / 2 + 10, h + 8, 0, 0, Math.PI * 2);
+      ctx.fill();
+      ctx.shadowBlur = 0;
+      ctx.restore();
+    }
 
-    // Bowl
+    // Bowl body
+    const grad = ctx.createLinearGradient(-w / 2, -h, w / 2, h);
+    if (isPressed) {
+      // Bright warm glow
+      const r = Math.round(184 + 71 * pressAlpha);
+      const g = Math.round(144 + 80 * pressAlpha);
+      const b = Math.round(30 + 30 * pressAlpha);
+      grad.addColorStop(0, `rgb(${r},${g},${b})`);
+      grad.addColorStop(0.5, `rgb(${Math.min(255, r + 20)},${Math.min(255, g + 20)},${b})`);
+      grad.addColorStop(1, `rgb(${r - 40},${g - 40},${b - 10})`);
+    } else {
+      grad.addColorStop(0, '#8B6914');
+      grad.addColorStop(0.5, '#A0792C');
+      grad.addColorStop(1, '#6B5210');
+    }
+    ctx.fillStyle = grad;
     ctx.beginPath();
     ctx.moveTo(-w / 2, -h / 2);
     ctx.quadraticCurveTo(-w / 2 - 3, h / 2, -w / 3, h);
@@ -75,11 +103,11 @@ const EggSprites = {
     ctx.fill();
 
     // Rim
-    ctx.fillStyle = '#A0792C';
+    ctx.fillStyle = isPressed ? `rgba(255, 224, 100, ${0.7 + pressAlpha * 0.3})` : '#A0792C';
     ctx.beginPath();
     ctx.ellipse(0, -h / 2, w / 2, 4, 0, 0, Math.PI * 2);
     ctx.fill();
-    ctx.strokeStyle = '#6B5210';
+    ctx.strokeStyle = isPressed ? '#B8901E' : '#6B5210';
     ctx.lineWidth = 1.5;
     ctx.stroke();
 
@@ -93,10 +121,11 @@ const EggSprites = {
       ctx.stroke();
     }
 
+    // Caught egg green ring
     if (highlighted) {
-      ctx.shadowColor = '#FFD700';
-      ctx.shadowBlur = 12;
-      ctx.strokeStyle = 'rgba(255, 215, 0, 0.5)';
+      ctx.shadowColor = '#44ff88';
+      ctx.shadowBlur = 14;
+      ctx.strokeStyle = 'rgba(68, 255, 136, 0.6)';
       ctx.lineWidth = 2;
       ctx.beginPath();
       ctx.ellipse(0, 2, w / 2 + 4, h, 0, 0, Math.PI * 2);

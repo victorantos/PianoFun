@@ -39,6 +39,7 @@ const EggGame = {
   // UI state
   lastCaughtMidi: null,
   lastCaughtTimer: 0,
+  pressedNotes: {},   // midi -> timer (ms remaining), for visual feedback
   _nextId: 0,
 
   // Callbacks
@@ -114,6 +115,7 @@ const EggGame = {
     this.frozenTimer = 0;
     this.lastCaughtMidi = null;
     this.lastCaughtTimer = 0;
+    this.pressedNotes = {};
     this._nextId = 0;
     EggRenderer.cleanup();
   },
@@ -162,6 +164,12 @@ const EggGame = {
     const dt = Math.min(timestamp - this.lastFrameTime, 50);
     this.lastFrameTime = timestamp;
 
+    // Decay pressed note timers (always, for visual feedback in all states)
+    for (const midi in this.pressedNotes) {
+      this.pressedNotes[midi] -= dt;
+      if (this.pressedNotes[midi] <= 0) delete this.pressedNotes[midi];
+    }
+
     if (this.state === 'countdown') {
       this._tickCountdown(dt);
     }
@@ -195,6 +203,8 @@ const EggGame = {
       mode: this.mode,
       players: this.players,
       nestMidis: this._getNestMidis(),
+      activeNotes: MidiManager.activeNotes,
+      pressedNotes: this.pressedNotes,
       lastCaughtMidi: this.lastCaughtMidi,
       gameTime: this.gameTime,
       frozenTimer: this.frozenTimer,
@@ -414,6 +424,9 @@ const EggGame = {
   // === INPUT ===
 
   _onNoteOn(midi, velocity) {
+    // Always track pressed notes for visual feedback (even during countdown)
+    this.pressedNotes[midi] = 300;
+
     if (this.state === 'gameover') {
       this._showResults();
       return;
