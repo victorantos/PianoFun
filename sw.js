@@ -1,4 +1,4 @@
-const CACHE_NAME = 'pianofun-v1';
+const CACHE_NAME = 'pianofun-__GIT_HASH__';
 
 const STATIC_ASSETS = [
   './',
